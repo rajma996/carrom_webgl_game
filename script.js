@@ -48,6 +48,7 @@ var main=function() {
     return false;
   }
 
+
   /*========================= SHADERS ========================= */
   /*jshint multistr: true */
 
@@ -100,6 +101,16 @@ gl_FragColor = vec4(vColor, 1.);\n\
   GL.enableVertexAttribArray(_color);
   GL.enableVertexAttribArray(_position);
 
+  var globals ={
+    GL:GL,
+    CANVAS:CANVAS,
+    _Pmatrix:_Pmatrix,
+    _Vmatrix:_Vmatrix,
+    _Mmatrix:_Mmatrix,
+    _color:_color,
+    _position:_position
+  };
+
   GL.useProgram(SHADER_PROGRAM);
 
   /*========================= THE CUBE ========================= */
@@ -115,68 +126,69 @@ gl_FragColor = vec4(vColor, 1.);\n\
     1, 1, 1,     0,0,1,
     -1, 1, 1,     0,0,1,
 
-    -1,-1,-1,     0,1,1,
-    -1, 1,-1,     0,1,1,
-    -1, 1, 1,     0,1,1,
-    -1,-1, 1,     0,1,1,
 
-    1,-1,-1,     1,0,0,
-    1, 1,-1,     1,0,0,
-    1, 1, 1,     1,0,0,
-    1,-1, 1,     1,0,0,
 
-    -1,-1,-1,     1,0,1,
-    -1,-1, 1,     1,0,1,
-    1,-1, 1,     1,0,1,
-    1,-1,-1,     1,0,1,
-
-    -1, 1,-1,     0,1,0,
-    -1, 1, 1,     0,1,0,
-    1, 1, 1,     0,1,0,
-    1, 1,-1,     0,1,0
+    // -1,-1,-1,     0,1,1,
+    // -1, 1,-1,     0,0.5,1,
+    // -1, 1, 1,     0,1,1,
+    // -1,-1, 1,     0,1,0.5,
+    //
+    // 1,-1,-1,     1,0,0,
+    // 1, 1,-1,     1,0,1,
+    // 1, 1, 1,     1,1,0,
+    // 1,-1, 1,     1,0,0,
+    //
+    // -1,-1,-1,     1,0,1,
+    // -1,-1, 1,     1,0,1,
+    // 1,-1, 1,     1,0,1,
+    // 1,-1,-1,     1,0,1,
+    //
+    // -1, 1,-1,     0,1,0,
+    // -1, 1, 1,     1,1,0,
+    // 1, 1, 1,     0,1,1,
+    // 1, 1,-1,     0.5,1,0
 
   ];
 
-  var CUBE_VERTEX= GL.createBuffer ();
-  GL.bindBuffer(GL.ARRAY_BUFFER, CUBE_VERTEX);
-  GL.bufferData(GL.ARRAY_BUFFER,
-                new Float32Array(cube_vertex),
-    GL.STATIC_DRAW);
 
-  FACES :
+
+  // FACES :
   var cube_faces = [
-    0,1,2,
-    0,2,3,
+    // 0,1,2,
+    // 0,2,3,
 
     4,5,6,
     4,6,7,
 
-    8,9,10,
-    8,10,11,
+    4,5,6,
+    4,6,7,
 
-    12,13,14,
-    12,14,15,
+    4,5,6,
+    4,6,7,
+    4,5,6,
+    4,6,7,
+    4,5,6,
+    4,6,7,
+    4,5,6,
+    4,6,7
 
-    16,17,18,
-    16,18,19,
-
-    20,21,22,
-    20,22,23
+   //
+  //  1,2,6,
+  //  1,6,5,
+  //  0,4,7,
+      // 0,7,3,
+  //  1,4,0,
+      // 1,4,5,
+      // 2,3,7,
+      // 2,7,6
 
   ];
-  var CUBE_FACES= GL.createBuffer ();
-  GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, CUBE_FACES);
-  GL.bufferData(GL.ELEMENT_ARRAY_BUFFER,
-                new Uint16Array(cube_faces),
-    GL.STATIC_DRAW);
+
+  cube_vao = construct.get_vao(cube_vertex,cube_faces,globals);
 
   /*========================= MATRIX ========================= */
 
-  var PROJMATRIX=LIBS.get_projection(90, CANVAS.width/CANVAS.height, 1, 100);
-  var MOVEMATRIX=LIBS.get_I4();
-  var VIEWMATRIX=LIBS.get_I4();
 
-  LIBS.translateZ(VIEWMATRIX, -6);
   var THETA=0,
       PHI=0;
 
@@ -193,25 +205,13 @@ gl_FragColor = vec4(vColor, 1.);\n\
       dX*=AMORTIZATION, dY*=AMORTIZATION;
       THETA+=dX, PHI+=dY;
     }
-    LIBS.set_I4(MOVEMATRIX);
-    LIBS.rotateY(MOVEMATRIX, THETA);
-    LIBS.rotateX(MOVEMATRIX, PHI);
+
     time_old=time;
 
     GL.viewport(0.0, 0.0, CANVAS.width, CANVAS.height);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
-    GL.uniformMatrix4fv(_Pmatrix, false, PROJMATRIX);
-    GL.uniformMatrix4fv(_Vmatrix, false, VIEWMATRIX);
-    GL.uniformMatrix4fv(_Mmatrix, false, MOVEMATRIX);
-
-    GL.bindBuffer(GL.ARRAY_BUFFER, CUBE_VERTEX);
-    GL.vertexAttribPointer(_position, 3, GL.FLOAT, false,4*(3+3),0) ;
-    GL.vertexAttribPointer(_color, 3, GL.FLOAT, false,4*(3+3),3*4) ;
-
-    // GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, CUBE_FACES);
-    GL.drawElements(GL.TRIANGLES, 6*2*3, GL.UNSIGNED_SHORT, 0);
-
+    construct.draw_vao(cube_vao,THETA,PHI,globals);
     GL.flush();
 
     window.requestAnimationFrame(animate);
