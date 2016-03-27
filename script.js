@@ -1,10 +1,14 @@
 
 var main=function() {
   var CANVAS=document.getElementById("your_canvas");
-  CANVAS.width=window.innerWidth;
-  CANVAS.height=window.innerHeight;
+  CANVAS.width=1300;
+  CANVAS.height=680;
 
   /*========================= CAPTURE MOUSE EVENTS ========================= */
+
+  console.log(CANVAS.width);
+  console.log(CANVAS.height);
+
 
   var AMORTIZATION=0.95;
   var drag=false;
@@ -81,7 +85,6 @@ gl_FragColor = vec4(vColor, 1.);\n\
     }
     return shader;
   };
-
   var shader_vertex=get_shader(shader_vertex_source, GL.VERTEX_SHADER, "VERTEX");
   var shader_fragment=get_shader(shader_fragment_source, GL.FRAGMENT_SHADER, "FRAGMENT");
 
@@ -108,95 +111,25 @@ gl_FragColor = vec4(vColor, 1.);\n\
     _Vmatrix:_Vmatrix,
     _Mmatrix:_Mmatrix,
     _color:_color,
-    _position:_position
+    _position:_position,
+    mfactor:7
   };
 
   GL.useProgram(SHADER_PROGRAM);
 
-  /*========================= THE CUBE ========================= */
-  //POINTS :
-  var cube_vertex=[
-    -1,-1,-1,     1,1,0,
-    1,-1,-1,     1,1,0,
-    1, 1,-1,     1,1,0,
-    -1, 1,-1,     1,1,0,
-
-    -1,-1, 1,     0,0,1,
-    1,-1, 1,     0,0,1,
-    1, 1, 1,     0,0,1,
-    -1, 1, 1,     0,0,1,
-
-
-
-    // -1,-1,-1,     0,1,1,
-    // -1, 1,-1,     0,0.5,1,
-    // -1, 1, 1,     0,1,1,
-    // -1,-1, 1,     0,1,0.5,
-    //
-    // 1,-1,-1,     1,0,0,
-    // 1, 1,-1,     1,0,1,
-    // 1, 1, 1,     1,1,0,
-    // 1,-1, 1,     1,0,0,
-    //
-    // -1,-1,-1,     1,0,1,
-    // -1,-1, 1,     1,0,1,
-    // 1,-1, 1,     1,0,1,
-    // 1,-1,-1,     1,0,1,
-    //
-    // -1, 1,-1,     0,1,0,
-    // -1, 1, 1,     1,1,0,
-    // 1, 1, 1,     0,1,1,
-    // 1, 1,-1,     0.5,1,0
-
-  ];
-
-
-
-  // FACES :
-  var cube_faces = [
-    // 0,1,2,
-    // 0,2,3,
-
-    4,5,6,
-    4,6,7,
-
-    4,5,6,
-    4,6,7,
-
-    4,5,6,
-    4,6,7,
-    4,5,6,
-    4,6,7,
-    4,5,6,
-    4,6,7,
-    4,5,6,
-    4,6,7
-
-   //
-  //  1,2,6,
-  //  1,6,5,
-  //  0,4,7,
-      // 0,7,3,
-  //  1,4,0,
-      // 1,4,5,
-      // 2,3,7,
-      // 2,7,6
-
-  ];
-
-  cube_vao = construct.get_vao(cube_vertex,cube_faces,globals);
-
-  /*========================= MATRIX ========================= */
 
 
   var THETA=0,
       PHI=0;
 
-  /*========================= DRAWING ========================= */
+
   GL.enable(GL.DEPTH_TEST);
   GL.depthFunc(GL.LEQUAL);
-  GL.clearColor(0.0, 0.0, 0.0, 0.0);
+  GL.clearColor(1.0, 1.0, 1.0, 0.0);
   GL.clearDepth(1.0);
+
+  board_vaos = board.get_board(globals);
+  designs_vaos = board.get_designs(globals);
 
   var time_old=0;
   var animate=function(time) {
@@ -211,7 +144,9 @@ gl_FragColor = vec4(vColor, 1.);\n\
     GL.viewport(0.0, 0.0, CANVAS.width, CANVAS.height);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 
-    construct.draw_vao(cube_vao,THETA,PHI,globals);
+    board.draw_board(board_vaos,THETA,PHI,globals);
+    board.draw_designs(designs_vaos,THETA,PHI,globals);
+
     GL.flush();
 
     window.requestAnimationFrame(animate);

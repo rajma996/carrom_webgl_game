@@ -24,7 +24,7 @@ var construct={
       return (temp);
   },
 
-  draw_vao(vao,THETA,PHI,globals){
+  draw_vao: function(vao,THETA,PHI,mode,globals){
 
     var GL= globals.GL;
     var CANVAS=globals.CANVAS;
@@ -35,7 +35,9 @@ var construct={
     var _color = globals._color;
 
 
-    var PROJMATRIX=LIBS.get_projection(40, CANVAS.width/CANVAS.height, 1, 100);
+    // var PROJMATRIX=LIBS.get_projection(40, CANVAS.width/CANVAS.height, 1, 100);
+    // console.log(PROJMATRIX);
+    var PROJMATRIX = LIBS.get_ortho(-650,650,-340,340,-1200,1200);
     var MOVEMATRIX=LIBS.get_I4();
     var VIEWMATRIX=LIBS.get_I4();
 
@@ -48,12 +50,16 @@ var construct={
     GL.uniformMatrix4fv(_Vmatrix, false, VIEWMATRIX);
     GL.uniformMatrix4fv(_Mmatrix, false, MOVEMATRIX);
 
-    GL.bindBuffer(GL.ARRAY_BUFFER, cube_vao.vertex_bind);
+    GL.bindBuffer(GL.ARRAY_BUFFER, vao.vertex_bind);
     GL.vertexAttribPointer(_position, 3 , GL.FLOAT, false,4*(3+3),0) ;
     GL.vertexAttribPointer(_color, 3, GL.FLOAT, false,4*(3+3),3*4) ;
 
-    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, cube_vao.faces_bind);
-    GL.drawElements(GL.TRIANGLES, 6*2*3, GL.UNSIGNED_SHORT, 0);
+    GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, vao.faces_bind);
+    if(mode==1)
+      GL.drawElements(GL.TRIANGLES, vao.faces_array.length, GL.UNSIGNED_SHORT, 0);
+    if (mode==2)
+    GL.drawElements(GL.LINES, vao.faces_array.length, GL.UNSIGNED_SHORT, 0);
+
 
   }
 

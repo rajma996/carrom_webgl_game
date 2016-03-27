@@ -74,8 +74,13 @@ var LIBS={
     m[14]+=t;
   },
 
-  translateX: function(m, t){
-    m[12]+=t;
+  get_ortho: function(left,right,top,bottom,near,far){
+    return [
+      2/(right-left),0,0,0,
+      0,2/(top-bottom),0,0,
+      0,0,2/(far-near),0,
+      -1*(right+left)/(right-left),-1*(top+bottom)/(top-bottom),(far+near)/(far-near),1
+    ];
   }
 
 };
