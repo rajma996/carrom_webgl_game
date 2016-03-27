@@ -48,6 +48,8 @@ var main=function() {
   };
 
   var onkeypress = function(e){
+    // alert(e.keyCode);
+    if(e.keyCode==110) {mode=1; return;}
     if(e.keyCode==13)
     {
       if (mode==1) {
@@ -61,11 +63,15 @@ var main=function() {
       }
       else if(mode==3)
       {
-        var ini = globals.ini_velocity;
-        var angle = Math.atan((final_mouse_y-striker.y)/(final_mouse_x-striker.x));
+        var ini = globals.ini_velocity*power;
+        var angle = Math.atan((final_mouse_y-(-1*striker.y))/(final_mouse_x-striker.x));
+        if(angle<0) angle+=3.14159;
+        console.log(final_mouse_x); console.log(final_mouse_y);
+        console.log(striker.x); console.log(-1*striker.y);
+        console.log(angle*180/Math.PI);
         striker.vx = ini*Math.cos(angle);
-        striker.vy = ini*Math.sin(angle);
-        mode=4;
+        striker.vy = -1*ini*Math.sin(angle);
+       mode=4;
       }
     }
     if(mode==3 && e.keyCode==112)
@@ -164,7 +170,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
     mfactor:7,
     sfactor:3,
     cfactor:2.5,
-    ini_velocity:60
+    ini_velocity:3.5
   };
 
   GL.useProgram(SHADER_PROGRAM);
@@ -190,17 +196,21 @@ gl_FragColor = vec4(vColor, 1.);\n\
   var power_vao = pow.set_power(power,globals);
   var final_mouse_x;
   var final_mouse_y;
+  var starttime = (new Date()).getTime();
 
   var time_old=0;
   var animate=function(time) {
-    var dt=time-time_old;
+
+    while((new Date()).getTime()-starttime<50);
+    var dt=((new Date()).getTime()-starttime)/1000;
+    starttime = (new Date()).getTime();
+
     // console.log(dt);
     if (!drag) {
       dX*=AMORTIZATION, dY*=AMORTIZATION;
       THETA+=dX, PHI+=dY;
     }
-
-    time_old=time;
+      time_old=time;
 
     GL.viewport(0.0, 0.0, CANVAS.width, CANVAS.height);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
@@ -257,10 +267,8 @@ gl_FragColor = vec4(vColor, 1.);\n\
     if(mode==4)
     {
 
-      // striker.x +=dt*striker.vx;
-      // striker.y +=dt*striker.vy;
-      striker.x+=0.5;
-      striker.y+=0.5
+      striker.x +=dt*striker.vx;
+      striker.y +=dt*striker.vy;
       striker = coins.update_striker(striker,globals);
       construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
       for(i=0;i<coins_vao.length;i++)
