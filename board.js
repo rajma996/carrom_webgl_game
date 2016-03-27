@@ -49,13 +49,13 @@ var board={
     var circles = [];
     var scale = globals.mfactor;
 
-    var temp = twod.get_vao_circle(75*scale/2-125,75*scale/2-125,-20,3.5*scale,255/255,51/255,51/255,globals);
+    var temp = twod.get_vao_circle(75*scale/2-125,75*scale/2-125,-15,3.5*scale,255/255,51/255,51/255,globals);
     circles.push(temp);
-    temp = twod.get_vao_circle(-75*scale/2+125,75*scale/2-125,-20,3.5*scale,255/255,51/255,51/255,globals);
+    temp = twod.get_vao_circle(-75*scale/2+125,75*scale/2-125,-15,3.5*scale,255/255,51/255,51/255,globals);
     circles.push(temp);
-    temp = twod.get_vao_circle(75*scale/2-125,-75*scale/2+125,-20,3.5*scale,255/255,51/255,51/255,globals);
+    temp = twod.get_vao_circle(75*scale/2-125,-75*scale/2+125,-15,3.5*scale,255/255,51/255,51/255,globals);
     circles.push(temp);
-    temp = twod.get_vao_circle(-75*scale/2+125,-75*scale/2+125,-20,3.5*scale,255/255,51/255,51/255,globals);
+    temp = twod.get_vao_circle(-75*scale/2+125,-75*scale/2+125,-15,3.5*scale,255/255,51/255,51/255,globals);
     circles.push(temp);
 
     var lines = [];

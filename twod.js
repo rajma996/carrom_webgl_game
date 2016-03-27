@@ -25,7 +25,38 @@ var twod={
     };
     return twod_circle;
 
-  }
+  },
 
+  get_vao_line: function(x1,y1,z1,x2,y2,z2,c1,c2,c3,globals){
+    var vertices =[
+      x1+10,y1,z1, c1,c2,c3,
+      x1,y1+10,z1, c1,c2,c3,
+      x1-10,y1,z1, c1,c2,c3,
+      x1,y1-10,z1, c1,c2,c3,
+
+      x2+10,y2,z2, c1,c2,c3,
+      x2,y2+10,z2, c1,c2,c3,
+      x2-10,y2,z2, c1,c2,c3,
+      x2,y2-10,z2, c1,c2,c3
+
+    ]
+    var faces = [
+      0,1,2,0,2,3,
+      1,2,10,2,10,6,
+      0,1,10,0,4,10,
+      0,4,3,3,4,7,
+      2,3,6,3,6,7,
+      6,7,4,6,4,10
+
+    ]
+    temp_vao = construct.get_vao(vertices,faces,globals);
+    var line_final = {
+      vao:temp_vao,
+      x1:x1,y1:y1,z1:z1,
+      x2:x2,y2:y2,z2:z2
+    };
+    return line_final;
+
+  }
 
 };

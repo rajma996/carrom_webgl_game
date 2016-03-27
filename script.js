@@ -13,7 +13,7 @@ var main=function() {
   var AMORTIZATION=0.95;
   var drag=false;
 
-
+  var mouse_x,mouse_y;
   var old_x, old_y;
 
   var dX=0, dY=0;
@@ -34,7 +34,9 @@ var main=function() {
     y=y*(-1);
     x=x-650;
     y=y+340;
-    console.log(x); console.log(y);
+    mouse_x=x;
+    mouse_y=y;
+    // console.log(x); console.log(y);
 
     if (!drag) return false;
     dX=(e.pageX-old_x)*2*Math.PI/CANVAS.width,
@@ -45,11 +47,15 @@ var main=function() {
     e.preventDefault();
   };
 
+  var onkeypress = function(e){
+    console.log('d');
+  }
+
   CANVAS.addEventListener("mousedown", mouseDown, false);
   CANVAS.addEventListener("mouseup", mouseUp, false);
   CANVAS.addEventListener("mouseout", mouseUp, false);
   CANVAS.addEventListener("mousemove", mouseMove, false);
-
+  window.addEventListener("keypress",onkeypress,true);
   /*========================= GET WEBGL CONTEXT ========================= */
   var GL;
   try {
@@ -137,6 +143,10 @@ gl_FragColor = vec4(vColor, 1.);\n\
 
   board_vaos = board.get_board(globals);
   designs_vaos = board.get_designs(globals);
+  var player = 1;
+  var mode = 1 ;
+  var striker = coins.get_vao_striker(0,designs_vaos.circles[0].y-4,-11,1,1,1,globals);
+  var line_vao = twod.get_vao_line(20,20,-40,-20,-20,-40,1,1,1,globals);
 
   var time_old=0;
   var animate=function(time) {
@@ -153,6 +163,18 @@ gl_FragColor = vec4(vColor, 1.);\n\
 
     board.draw_board(board_vaos,THETA,PHI,globals);
     board.draw_designs(designs_vaos,THETA,PHI,globals);
+
+    construct.draw_vao(line_vao.vao,THETA,PHI,1,globals);
+
+    if(mode==1)
+    {
+      striker.x = mouse_x;
+      if(striker.x>designs_vaos.circles[0].x) striker.x=designs_vaos.circles[0].x;
+      if(striker.x<designs_vaos.circles[1].x) striker.x=designs_vaos.circles[1].x;
+      striker = coins.update_striker(striker,globals);
+      construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
+    }
+
 
     GL.flush();
 
