@@ -29,6 +29,13 @@ var main=function() {
   };
 
   var mouseMove=function(e) {
+    var x = e.pageX;
+    var y = e.pageY;
+    y=y*(-1);
+    x=x-650;
+    y=y+340;
+    console.log(x); console.log(y);
+
     if (!drag) return false;
     dX=(e.pageX-old_x)*2*Math.PI/CANVAS.width,
       dY=(e.pageY-old_y)*2*Math.PI/CANVAS.height;
