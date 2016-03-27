@@ -41,6 +41,4 @@ var cylinder={
   }
 
 
-
-
 };

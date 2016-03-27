@@ -48,7 +48,8 @@ var main=function() {
   };
 
   var onkeypress = function(e){
-    console.log('d');
+    if(e.keyCode==13)
+      mode++; mode%=4;
   }
 
   CANVAS.addEventListener("mousedown", mouseDown, false);
@@ -125,7 +126,9 @@ gl_FragColor = vec4(vColor, 1.);\n\
     _Mmatrix:_Mmatrix,
     _color:_color,
     _position:_position,
-    mfactor:7
+    mfactor:7,
+    sfactor:3,
+    cfactor:2.5
   };
 
   GL.useProgram(SHADER_PROGRAM);
@@ -146,7 +149,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
   var player = 1;
   var mode = 1 ;
   var striker = coins.get_vao_striker(0,designs_vaos.circles[0].y-4,-11,1,1,1,globals);
-  var line_vao = twod.get_vao_line(20,20,-40,-20,-20,-40,1,1,1,globals);
+  var coins_vao = coins.set_coins(globals);
 
   var time_old=0;
   var animate=function(time) {
@@ -163,8 +166,8 @@ gl_FragColor = vec4(vColor, 1.);\n\
 
     board.draw_board(board_vaos,THETA,PHI,globals);
     board.draw_designs(designs_vaos,THETA,PHI,globals);
-
-    construct.draw_vao(line_vao.vao,THETA,PHI,1,globals);
+    if(mode==2)
+      console.log(mode);
 
     if(mode==1)
     {
@@ -173,8 +176,19 @@ gl_FragColor = vec4(vColor, 1.);\n\
       if(striker.x<designs_vaos.circles[1].x) striker.x=designs_vaos.circles[1].x;
       striker = coins.update_striker(striker,globals);
       construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
+      var i;
+      for(i=0;i<coins_vao.length;i++)
+      {
+        construct.draw_vao(coins_vao[i].vao,THETA,PHI,1,globals);
+      }
     }
+    if(mode==2)
+    {
+      line_vao = twod.get_vao_line(striker.x,striker.y,striker.z,mouse_x,-1*mouse_y,striker.z,1,0,0,globals);
+      construct.draw_vao(line_vao.vao,THETA,PHI,1,globals);
+      construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
 
+    }
 
     GL.flush();
 
