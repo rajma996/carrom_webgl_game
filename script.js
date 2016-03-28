@@ -6,8 +6,6 @@ var main=function() {
 
   /*========================= CAPTURE MOUSE EVENTS ========================= */
 
-  console.log(CANVAS.width);
-  console.log(CANVAS.height);
 
 
   var AMORTIZATION=0.95;
@@ -66,11 +64,12 @@ var main=function() {
         var ini = globals.ini_velocity*power;
         var angle = Math.atan((final_mouse_y-(-1*striker.y))/(final_mouse_x-striker.x));
         if(angle<0) angle+=3.14159;
-        console.log(final_mouse_x); console.log(final_mouse_y);
-        console.log(striker.x); console.log(-1*striker.y);
-        console.log(angle*180/Math.PI);
+        // console.log(final_mouse_x); console.log(final_mouse_y);
+        // console.log(striker.x); console.log(-1*striker.y);
+        // console.log(angle*180/Math.PI);
         striker.vx = ini*Math.cos(angle);
         striker.vy = -1*ini*Math.sin(angle);
+        // console.log(striker.vx,striker.vy);
        mode=4;
       }
     }
@@ -193,6 +192,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
   var power = 75;
   var striker = coins.get_vao_striker(0,designs_vaos.circles[0].y-4,-11,1,1,1,globals);
   var coins_vao = coins.set_coins(globals);
+  // console.log(coins_vao[0].x);
   var power_vao = pow.set_power(power,globals);
   var final_mouse_x;
   var final_mouse_y;
@@ -217,8 +217,6 @@ gl_FragColor = vec4(vColor, 1.);\n\
 
     board.draw_board(board_vaos,THETA,PHI,globals);
     board.draw_designs(designs_vaos,THETA,PHI,globals);
-    if(mode==2)
-      console.log(mode);
 
     if(mode==1)
     {
@@ -230,7 +228,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
       var i;
       for(i=0;i<coins_vao.length;i++)
       {
-        construct.draw_vao(coins_vao[i].vao,THETA,PHI,1,globals);
+        construct.draw_vao(coins_vao[i].vao.vao,THETA,PHI,1,globals);
       }
       for(i=0;i<power_vao.length;i++)
       {
@@ -244,7 +242,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
       construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
       for(i=0;i<coins_vao.length;i++)
       {
-        construct.draw_vao(coins_vao[i].vao,THETA,PHI,1,globals);
+        construct.draw_vao(coins_vao[i].vao.vao,THETA,PHI,1,globals);
       }
       for(i=0;i<power_vao.length;i++)
       {
@@ -257,7 +255,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
       construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
       for(i=0;i<coins_vao.length;i++)
       {
-        construct.draw_vao(coins_vao[i].vao,THETA,PHI,1,globals);
+        construct.draw_vao(coins_vao[i].vao.vao,THETA,PHI,1,globals);
       }
       for(i=0;i<power_vao.length;i++)
       {
@@ -266,20 +264,56 @@ gl_FragColor = vec4(vColor, 1.);\n\
     }
     if(mode==4)
     {
-
       striker.x +=dt*striker.vx;
       striker.y +=dt*striker.vy;
+      var i;
+      for(i=0;i<coins_vao.length;i++)
+      {
+        coins_vao[i].x +=dt*coins_vao[i].vx;
+        coins_vao[i].y +=dt*coins_vao[i].vy;
+      }
       striker = coins.update_striker(striker,globals);
+      for(i=0;i<coins_vao.length;i++)
+      {
+        coins_vao[i] = coins.update_coin(coins_vao[i],globals);
+      }
+      for(i=0;i<coins_vao.length;i++)
+      {
+        if(collision.dis(striker.x,striker.y,coins_vao[i].x,coins_vao[i].y)<striker.r+coins_vao[i].r)
+        {
+          vnet = collision.check_collision(striker.x,striker.y,coins_vao[i].x,coins_vao[i].y,striker.vx,striker.vy,coins_vao[i].vx,coins_vao[i].vy);
+          striker.vx = vnet[0];
+          striker.vy = vnet[1];
+          coins_vao[i].vx = vnet[2];
+          coins_vao[i].vy = vnet[3];
+        }
+      }
+      var i,j;
+      for(i=0;i<coins_vao.length;i++)
+      {
+        for(j=i+1;j<coins_vao.length;j++)
+        {
+          if(collision.dis(coins_vao[i].x,coins_vao[i].y,coins_vao[j].x,coins_vao[j].y)<coins_vao[i].r+coins_vao[j].r)
+          {
+            vnet = collision.check_collision(coins_vao[i].x,coins_vao[i].y,coins_vao[i].vx,coins_vao[i].vy,coins_vao[j].x,coins_vao[j].y,coins_vao[j].vx,coins_vao[j].vy);
+            coins_vao[i].vx = vnet[0];
+            coins_vao[i].vy = vnet[1]
+          }
+        }
+      }
       construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
       for(i=0;i<coins_vao.length;i++)
       {
-        construct.draw_vao(coins_vao[i].vao,THETA,PHI,1,globals);
+        construct.draw_vao(coins_vao[i].vao.vao,THETA,PHI,1,globals);
       }
       for(i=0;i<power_vao.length;i++)
       {
         construct.draw_vao(power_vao[i].vao,THETA,PHI,1,globals);
       }
-
+      var mode_flag = 0;
+      if(striker.vx!=0 || striker.vy!=0) mode_flag =1;
+      for(i=0;i<coins_vao.length;i++) if(coins_vao[i].vx!=0 || coins_vao[i].vy!=0) mode_flag=1;
+      if(mode_flag==0) mode=1;
 
     }
 
