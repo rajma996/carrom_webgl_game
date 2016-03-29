@@ -1,6 +1,10 @@
 
 var main=function() {
   var CANVAS=document.getElementById("your_canvas");
+  var textCanvas = document.getElementById("text");
+  var ctx = textCanvas.getContext("2d");
+
+
   CANVAS.width=1300;
   CANVAS.height=680;
 
@@ -199,8 +203,15 @@ gl_FragColor = vec4(vColor, 1.);\n\
   var starttime = (new Date()).getTime();
   var score_start = (new Date()).getTime();
   var score =100;
+  var red_in = 0;
 
   var time_old=0;
+  var update_score = function(ctx)
+  {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.font = "48px serif";
+    ctx.fillText(score, 100, 100);
+  }
   var animate=function(time) {
 
     // while((new Date()).getTime()-starttime<50);
@@ -211,6 +222,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
     {
       score -=1;
       score_start = (new Date()).getTime();
+      update_score(ctx);
     }
     // console.log(dt);
     if (!drag) {
@@ -221,6 +233,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
 
     GL.viewport(0.0, 0.0, CANVAS.width, CANVAS.height);
     GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
+
 
     board.draw_board(board_vaos,THETA,PHI,globals);
     board.draw_designs(designs_vaos,THETA,PHI,globals);
@@ -286,7 +299,9 @@ gl_FragColor = vec4(vColor, 1.);\n\
         coins_vao[i].x +=dt*coins_vao[i].vx;
         coins_vao[i].y +=dt*coins_vao[i].vy;
         if(coins_vao[i].vx>0) coins_vao[i].vx-=1;
+        if(coins_vao[i].vx<0) coins_vao[i].vx+=1;
         if(coins_vao[i].vy<0) coins_vao[i].vy+=1;
+        if(coins_vao[i].vy>0) coins_vao[i].vy-=1;
         if(coins_vao[i].vx<=1 && coins_vao[i].vx>=-1) coins_vao[i].vx=0;
         if(coins_vao[i].vy<=1 && coins_vao[i].vy>=-1) coins_vao[i].vy=0;
       }
@@ -313,7 +328,7 @@ gl_FragColor = vec4(vColor, 1.);\n\
         {
           if(collision.dis(coins_vao[i].x,coins_vao[i].y,coins_vao[j].x,coins_vao[j].y)<coins_vao[i].r+coins_vao[j].r+5)
           {
-            vnet = collision.check_collision(coins_vao[i].x,coins_vao[i].y,coins_vao[i].vx,coins_vao[i].vy,coins_vao[j].x,coins_vao[j].y,coins_vao[j].vx,coins_vao[j].vy,globals);
+            vnet = collision.check_collision(coins_vao[i].x,coins_vao[i].y,coins_vao[j].x,coins_vao[j].y,coins_vao[i].vx,coins_vao[i].vy,coins_vao[j].vx,coins_vao[j].vy,globals);
             coins_vao[i].vx = vnet[0];
             coins_vao[i].vy = vnet[1];
             coins_vao[j].vx = vnet[2];
@@ -339,15 +354,43 @@ gl_FragColor = vec4(vColor, 1.);\n\
         striker = coins.get_vao_striker(0,designs_vaos.circles[0].y-4,-11,1,1,1,globals);
         mode=1;
         score-=20;
+        update_score(ctx);
       }
+      var in_flag = 0;
       for(j=0;j<coins_vao.length;j++)
       {
         if(collision.check_pocket(coins_vao[j],globals)==1)
         {
-          if(coins_vao[j].c==0) score +=5;
-          else score -=20;
+          if(coins_vao[j].c1==1 && coins_vao[j].c2==1) // color is same as striker
+          {
+            in_flag = 1;
+            if(red_in==0)
+            {
+              score +=5;
+              update_score(ctx);
+            }
+            else if(red_in==1)
+            {
+              score +=20;
+              update_score(ctx);
+              red_in = 0;
+            }
+          }
+          else if(coins_vao[j].c1==0)  { score -=20; update_score(ctx); }
+          else if (coins_vao[j].c1==1 && coins_vao[j].c2==0) red_in = 1;
           coins_vao.splice(j,1);
         }
+      }
+      if(red_in==1 && in_flag==0)
+      {
+        var scale = globals.mfactor;
+        var cscale = globals.cfactor;
+        var temp_vao = twod.get_vao_circle(0,0,-11,cscale*scale,1,0,0,globals);
+        temp = {
+          vao:temp_vao,
+          x:0,y:0,z:-11,c1:1,c2:0,c3:0,vx:0,vy:0,r:cscale*scale
+        };
+        coins_vao.push(temp);
       }
 
       construct.draw_vao(striker.vao.vao,THETA,PHI,1,globals);
@@ -361,8 +404,8 @@ gl_FragColor = vec4(vColor, 1.);\n\
       }
       var mode_flag = 0;
       // console.log(striker.vx,striker.vy);
-      if(striker.vx!=0 || striker.vy!=0) { console.log('strik'); mode_flag =1; }
-      for(i=0;i<coins_vao.length;i++) if(coins_vao[i].vx!=0 || coins_vao[i].vy!=0) { console.log('coi',i); mode_flag=1; }
+      if(striker.vx!=0 || striker.vy!=0) { mode_flag =1; }
+      for(i=0;i<coins_vao.length;i++) if(coins_vao[i].vx!=0 || coins_vao[i].vy!=0) {  mode_flag=1; }
       // console.log(mode_flag);
       if(mode_flag==0){  mode=1;   striker = coins.get_vao_striker(0,designs_vaos.circles[0].y-4,-11,1,1,1,globals); }
 

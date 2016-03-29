@@ -21,8 +21,10 @@ var coins={
   update_coin: function(coin,globals){
     var scale = globals.mfactor;
     var cscale = globals.cfactor;
-    var c = coin.c;
-    coin.vao = twod.get_vao_circle(coin.x,coin.y,coin.z,cscale*scale,c,c,c,globals);
+    var c1 = coin.c1;
+    var c2 = coin.c2
+    var c3=coin.c3;
+    coin.vao = twod.get_vao_circle(coin.x,coin.y,coin.z,cscale*scale,c1,c2,c3,globals);
     return coin;
 
   },
@@ -33,50 +35,56 @@ var coins={
     var temp_vao = twod.get_vao_circle(8*scale,0,-11,cscale*scale,1,1,1,globals);
     var temp = {
       vao:temp_vao,
-      x:8*scale,y:0,z:-11,c:1,vx:0,vy:0,r:cscale*scale
+      x:8*scale,y:0,z:-11,c1:1,c2:1,c3:1,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
     temp_vao = twod.get_vao_circle(0,8*scale,-11,cscale*scale,1,1,1,globals);
     temp = {
       vao:temp_vao,
-      x:0,y:8*scale,z:-11,c:1,vx:0,vy:0,r:cscale*scale
+      x:0,y:8*scale,z:-11,c1:1,c2:1,c3:1,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
     temp_vao = twod.get_vao_circle(-1*8*scale,0,-11,cscale*scale,1,1,1,globals);
     temp ={
       vao:temp_vao,
-      x:-1*8*scale,y:0,z:-11,c:1,vx:0,vy:0,r:cscale*scale
+      x:-1*8*scale,y:0,z:-11,c1:1,c2:1,c3:1,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
     temp_vao = twod.get_vao_circle(0,-1*8*scale,-11,cscale*scale,1,1,1,globals);
     temp = {
       vao:temp_vao,
-      x:0,y:-1*8*scale,z:-11,c:1,vx:0,vy:0,r:cscale*scale
+      x:0,y:-1*8*scale,z:-11,c1:1,c2:1,c3:1,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
 
     temp_vao = twod.get_vao_circle(8*scale/1.41,8*scale/1.41,-11,cscale*scale,0,0,0,globals)
     temp = {
       vao:temp_vao,
-      x:8*scale/1.41,y:8*scale/1.41,z:-11,c:0,vx:0,vy:0,r:cscale*scale
+      x:8*scale/1.41,y:8*scale/1.41,z:-11,c1:0,c2:0,c3:0,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
     temp_vao = twod.get_vao_circle(-1*8*scale/1.41,8*scale/1.41,-11,cscale*scale,0,0,0,globals);
     temp = {
       vao:temp_vao,
-      x:-1*8*scale/1.41,y:8*scale/1.41,z:-11,c:0,vx:0,vy:0,r:cscale*scale
+      x:-1*8*scale/1.41,y:8*scale/1.41,z:-11,c1:0,c2:0,c3:0,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
     temp_vao = twod.get_vao_circle(8*scale/1.41,-1*8*scale/1.41,-11,cscale*scale,0,0,0,globals)
     temp = {
       vao:temp_vao,
-      x:8*scale/1.41,y:-1*8*scale/1.41,z:-11,c:0,vx:0,vy:0,r:cscale*scale
+      x:8*scale/1.41,y:-1*8*scale/1.41,z:-11,c1:0,c2:0,c3:0,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
     temp_vao = twod.get_vao_circle(-1*8*scale/1.41,-1*8*scale/1.41,-11,cscale*scale,0,0,0,globals);
     temp = {
       vao:temp_vao,
-      x:-1*8*scale/1.41,y:-1*8*scale/1.41,z:-11,c:0,vx:0,vy:0,r:cscale*scale
+      x:-1*8*scale/1.41,y:-1*8*scale/1.41,z:-11,c1:0,c2:0,c3:0,vx:0,vy:0,r:cscale*scale
+    };
+    coins_vao.push(temp);
+    temp_vao = twod.get_vao_circle(0,0,-11,cscale*scale,1,0,0,globals);
+    temp = {
+      vao:temp_vao,
+      x:0,y:0,z:-11,c1:1,c2:0,c3:0,vx:0,vy:0,r:cscale*scale
     };
     coins_vao.push(temp);
 
