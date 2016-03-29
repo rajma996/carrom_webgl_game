@@ -35,17 +35,47 @@ var construct={
     var _color = globals._color;
 
 
-    // var PROJMATRIX=LIBS.get_projection(40, CANVAS.width/CANVAS.height, 1, 100);
-    // console.log(PROJMATRIX);
-    var PROJMATRIX = LIBS.get_ortho(-650,650,-340,340,-1200,1200);
-    var MOVEMATRIX=LIBS.get_I4();
-    var VIEWMATRIX=LIBS.get_I4();
+    if (globals.camera_mode==1)
+    {
+      var PROJMATRIX = LIBS.get_ortho(-650,650,-340,340,-1200,1200);
+      var MOVEMATRIX=LIBS.get_I4();
+      var VIEWMATRIX=LIBS.get_I4();
+      LIBS.translateZ(VIEWMATRIX, -6);
+      LIBS.set_I4(MOVEMATRIX);
+      LIBS.rotateY(MOVEMATRIX, THETA);
+      LIBS.rotateX(MOVEMATRIX, PHI);
+    }
+    if(globals.camera_mode==2)
+    {
+      var PROJMATRIX = LIBS.get_ortho(-500,500,-300,300,-1200,1200);
+      var MOVEMATRIX=LIBS.get_I4();
+      var VIEWMATRIX=LIBS.get_I4();
+      LIBS.translateZ(VIEWMATRIX, -6);
+      LIBS.set_I4(MOVEMATRIX);
+      LIBS.rotateY(MOVEMATRIX, -0.01470482);
+      LIBS.rotateX(MOVEMATRIX, -1.2658770398);
+    }
+    if(globals.camera_mode==3)
+    {
+      // console.log(globals.striker);
+      var sx = globals.striker.x;
+      var sy = globals.striker.y;
+      var tx,ty;
+      if (globals.striker.vx>=0) tx=10;
+      else if(globals.striker<0) tx=-10;
+      if(globals.striker.vy>0) ty=10;
+      else if(globals.striker.vy<=0) ty=-10;
+      var VIEWMATRIX=LIBS.makeLookAt([sx,sy,20],[sx+tx,sy+ty,0],[0,-1,0]);
+      var PROJMATRIX = LIBS.get_ortho(-300,300,-100,100,-1200,1200);
+      var MOVEMATRIX=LIBS.get_I4();
+      LIBS.translateZ(VIEWMATRIX, -6);
+      LIBS.set_I4(MOVEMATRIX);
+      LIBS.rotateY(MOVEMATRIX, THETA);
+      LIBS.rotateX(MOVEMATRIX, PHI);
 
-    LIBS.translateZ(VIEWMATRIX, -6);
-    LIBS.set_I4(MOVEMATRIX);
-    // LIBS.translateX(MOVEMATRIX,5);
-    LIBS.rotateY(MOVEMATRIX, THETA);
-    LIBS.rotateX(MOVEMATRIX, PHI);
+    }
+
+
     GL.uniformMatrix4fv(_Pmatrix, false, PROJMATRIX);
     GL.uniformMatrix4fv(_Vmatrix, false, VIEWMATRIX);
     GL.uniformMatrix4fv(_Mmatrix, false, MOVEMATRIX);

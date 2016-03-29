@@ -81,6 +81,56 @@ var LIBS={
       0,0,2/(far-near),0,
       -1*(right+left)/(right-left),-1*(top+bottom)/(top-bottom),(far+near)/(far-near),1
     ];
-  }
+  },
+
+  cross : function (a, b) {
+  return [a[1] * b[2] - a[2] * b[1],
+          a[2] * b[0] - a[0] * b[2],
+          a[0] * b[1] - a[1] * b[0]];
+  },
+
+  subtractVectors: function(a, b) {
+  return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  },
+
+  normalize: function(v) {
+    var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    // make sure we don't divide by 0.
+    if (length > 0.00001) {
+      return [v[0] / length, v[1] / length, v[2] / length];
+    } else {
+      return [0, 0, 0];
+    }
+  },
+
+  makeLookAt: function(cameraPosition, target, up) {
+      var zAxis = LIBS.normalize(
+          LIBS.subtractVectors(cameraPosition, target));
+      var xAxis = LIBS.cross(up, zAxis);
+      var yAxis = LIBS.cross(zAxis, xAxis);
+
+      return [
+         xAxis[0], xAxis[1], xAxis[2], 0,
+         yAxis[0], yAxis[1], yAxis[2], 0,
+         zAxis[0], zAxis[1], zAxis[2], 0,
+         cameraPosition[0],
+         cameraPosition[1],
+         cameraPosition[2],
+         1];
+    },
+
+
+    makePerspective: function(fieldOfViewInRadians, aspect, near, far) {
+        var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+        var rangeInv = 1.0 / (near - far);
+
+        return [
+          f / aspect, 0, 0, 0,
+          0, f, 0, 0,
+          0, 0, (near + far) * rangeInv, -1,
+          0, 0, near * far * rangeInv * 2, 0
+        ];
+      }
+
 
 };

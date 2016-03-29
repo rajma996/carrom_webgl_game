@@ -4,7 +4,6 @@ var main=function() {
   var textCanvas = document.getElementById("text");
   var ctx = textCanvas.getContext("2d");
 
-
   CANVAS.width=1300;
   CANVAS.height=680;
 
@@ -51,7 +50,22 @@ var main=function() {
 
   var onkeypress = function(e){
     // alert(e.keyCode);
-    if(e.keyCode==110) {mode=1; return;}
+    if(e.keyCode==49)
+    {
+      globals.camera_mode = 1;
+    }
+    if(e.keyCode==50)
+    {
+      globals.camera_mode = 2;
+    }
+    if(e.keyCode==51)
+    {
+      globals.camera_mode = 3;
+    }
+    if(e.keyCode==110)
+    {
+       striker = coins.get_vao_striker(0,designs_vaos.circles[0].y-4,-11,1,1,1,globals); mode=1; return;
+     }
     if(e.keyCode==13)
     {
       if (mode==1) {
@@ -77,7 +91,7 @@ var main=function() {
        mode=4;
       }
     }
-    if(mode==3 && e.keyCode==112)
+    if(mode==3 && e.keyCode==38)
     {
       if(power<150)
       {
@@ -85,7 +99,7 @@ var main=function() {
         power_vao = pow.increase_power(power_vao,globals);
       }
     }
-    if(mode==3 && e.keyCode==111)
+    if(mode==3 && e.keyCode==40)
     {
       if(power>1)
       {
@@ -173,7 +187,9 @@ gl_FragColor = vec4(vColor, 1.);\n\
     mfactor:7,
     sfactor:3,
     cfactor:2.5,
-    ini_velocity:3.5
+    ini_velocity:3.5,
+    camera_mode:1,
+    striker:striker,
   };
 
   GL.useProgram(SHADER_PROGRAM);
@@ -210,11 +226,14 @@ gl_FragColor = vec4(vColor, 1.);\n\
   {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
     ctx.font = "48px serif";
-    ctx.fillText(score, 100, 100);
+    ctx.fillText('Score:' + score, 80, 80);
   }
+  update_score(ctx);
   var animate=function(time) {
-
+    globals.striker = striker
+    // console.log(globals.camera_mode);
     // while((new Date()).getTime()-starttime<50);
+    // console.log(THETA,PHI);
     var dt=((new Date()).getTime()-starttime)/1000;
     starttime = (new Date()).getTime();
 
