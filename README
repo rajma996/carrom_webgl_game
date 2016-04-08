@@ -1,0 +1,37 @@
+open index.html file in webgl compatible browswer and it is enabled.
+Visit http://webglreport.com/ to check for compatibility and other issues.
+
+Control:
+
+Deciding position :
+    decide the striker postition by moving the mouse . the striker will move with the
+    mouse pointer .
+    Press Enter when ready
+
+Aim:
+    move the mouse cursor to aim.
+    red line will direct you.
+    Press enter when ready
+
+Set power:
+    press key 'p' to increase the power.
+    press key 'o' to decrese the power.
+    look at the power band on the right
+    Press enter when ready
+
+Camera views :
+
+    There are three camera views
+    Press 1,2,3 keys (above the alphabet keys) to toggle between them.
+
+Scoring : 
+
+    one point decreased every 5 seconds.
+    5 points for white coin
+    -20 points for black coin
+    -20 if striker goes in hole
+    20 if red coin + white coin in next turn
+
+
+
+NO EXTERNAL LIBRARIES ARE USED.
